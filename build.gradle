@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.simiacryptus'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('com.cognotik:core:2.0.42')
+    implementation('com.cognotik:webui:2.0.42')
+    implementation platform('org.junit:junit-bom:5.10.0')
+    implementation ('org.junit.jupiter:junit-jupiter')
+}
+
+test {
+    useJUnitPlatform()
+}
