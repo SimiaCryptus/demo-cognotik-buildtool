@@ -10,10 +10,14 @@ repositories {
 }
 
 dependencies {
-    implementation('com.cognotik:core:2.0.42')
-    implementation('com.cognotik:webui:2.0.42')
-    implementation platform('org.junit:junit-bom:5.10.0')
-    implementation ('org.junit.jupiter:junit-jupiter')
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+
+    testImplementation('com.cognotik:core:2.0.42')
+    testImplementation('com.cognotik:webui:2.0.42')
+    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib:2.3.0'
+    testImplementation 'com.google.guava:guava:33.4.8-jre'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation ('org.junit.jupiter:junit-jupiter')
 }
 
 test {

@@ -7,16 +7,9 @@ import com.simiacryptus.cognotik.models.AIModel;
 import com.simiacryptus.cognotik.models.APIProvider;
 import com.simiacryptus.cognotik.models.ModelSchema;
 import com.simiacryptus.cognotik.plan.OrchestrationConfig;
-import com.simiacryptus.cognotik.plan.tools.TaskType;
-import com.simiacryptus.cognotik.plan.tools.TaskTypeConfig;
-import com.simiacryptus.cognotik.plan.cognitive.AdaptivePlanningConfig;
-import com.simiacryptus.cognotik.plan.cognitive.CodingMode.CodingModeConfig;
 import com.simiacryptus.cognotik.plan.cognitive.CognitiveModeConfig;
-import com.simiacryptus.cognotik.plan.cognitive.CognitiveModeType;
-import com.simiacryptus.cognotik.plan.cognitive.WaterfallMode.WaterfallModeConfig;
-import com.simiacryptus.cognotik.plan.tools.file.FileModificationTask;
+import com.simiacryptus.cognotik.plan.tools.TaskTypeConfig;
 import com.simiacryptus.cognotik.plan.tools.reasoning.BrainstormingTask;
-import com.simiacryptus.cognotik.plan.tools.run.AutoFixTask;
 import com.simiacryptus.cognotik.plan.tools.run.SubPlanTask;
 import com.simiacryptus.cognotik.platform.ApplicationServices;
 import com.simiacryptus.cognotik.platform.FileApplicationServices;
@@ -24,75 +17,10 @@ import com.simiacryptus.cognotik.platform.Session;
 import com.simiacryptus.cognotik.platform.file.UserSettingsManager;
 import com.simiacryptus.cognotik.platform.model.*;
 import com.simiacryptus.cognotik.util.PlanHarness;
-import com.simiacryptus.cognotik.util.UnifiedHarness;
-import org.junit.jupiter.api.DynamicTest;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-@SuppressWarnings("unused")
-public class SoftwareProjectGenerator {
-    static {
-        UnifiedHarness.Companion.configurePlatform();
-    }
-
-    //@TestFactory
-    public List<DynamicTest> tests() {
-        List<CognitiveModeConfig> cognitiveSettingsList = Arrays.asList(
-                new WaterfallModeConfig(),
-                new AdaptivePlanningConfig(),
-                new CognitiveModeConfig(CognitiveModeType.Companion.getHierarchical()),
-                new CodingModeConfig()
-        );
-
-        return cognitiveSettingsList.stream().flatMap(cognitiveSettings2 -> {
-            String typeName = cognitiveSettings2.getType() != null ? cognitiveSettings2.getType().getName() : "null";
-
-            TaskType<FileModificationTask.FileModificationTaskExecutionConfigData, TaskTypeConfig> fileModification = FileModificationTask.Companion.getFileModification();
-            ApiChatModel chatModel = ProjectGenerator.getChatModel(GeminiModels.INSTANCE.getGeminiFlash_30_Preview());
-            DynamicTest blindTest = DynamicTest.dynamicTest("SoftwareProjectGenerator_" + typeName + "_blind", () -> {
-                Map<String, TaskTypeConfig> tasks = new HashMap<>();
-                tasks.put(fileModification.getName(), new TaskTypeConfig(fileModification.getName(), fileModification.getName(), chatModel));
-                new ProjectGenerator(
-                        new WaterfallModeConfig(),
-                        cognitiveSettings2,
-                        tasks,
-                        "SoftwareProjectGenerator_" + typeName + "_blind",
-                        "Build a fun and unique browser-based game."
-                ).run();
-            });
-
-            DynamicTest specTest = DynamicTest.dynamicTest("SoftwareProjectGenerator_" + typeName + "_spec", () -> {
-                Map<String, TaskTypeConfig> tasks = new HashMap<>();
-                tasks.put(fileModification.getName(), new TaskTypeConfig(fileModification.getName(), fileModification.getName(), chatModel));
-                new ProjectGenerator(
-                        new WaterfallModeConfig(),
-                        cognitiveSettings2,
-                        tasks,
-                        "SoftwareProjectGenerator_" + typeName + "_spec",
-                        "Build a fun and unique browser-based game. As the first phase of implementation, create detailed plan and design documents."
-                ).run();
-            });
-
-            DynamicTest fixedTest = DynamicTest.dynamicTest("SoftwareProjectGenerator_" + typeName + "_fixed", () -> {
-                Map<String, TaskTypeConfig> tasks = new HashMap<>();
-                tasks.put(fileModification.getName(), new TaskTypeConfig(fileModification.getName(), fileModification.getName(), chatModel));
-                tasks.put(AutoFixTask.Companion.getAutoFix().getName(), new AutoFixTask.AutoFixTaskTypeConfig());
-                new ProjectGenerator(
-                        new WaterfallModeConfig(),
-                        cognitiveSettings2,
-                        tasks,
-                        "SoftwareProjectGenerator_" + typeName + "_fixed",
-                        "Build a fun and unique browser-based game."
-                ).run();
-            });
-
-            return Stream.of(blindTest, specTest, fixedTest);
-        }).collect(Collectors.toList());
-    }
-}
+import java.util.ArrayList;
+import java.util.Map;
 
 class ProjectGenerator extends PlanHarness {
     private final CognitiveModeConfig cognitiveSettings2;
@@ -105,6 +33,7 @@ class ProjectGenerator extends PlanHarness {
     static User user = UserSettingsManager.Companion.getDefaultUser();
 
     static UserSettings userSettings = fileApplicationServices.getUserSettingsManager().getUserSettings(user);
+
     public ProjectGenerator(
             CognitiveModeConfig cognitiveSettings1,
             CognitiveModeConfig cognitiveSettings2,
@@ -114,7 +43,7 @@ class ProjectGenerator extends PlanHarness {
     ) {
         super(prompt,
                 cognitiveSettings1,
-                (model, session) -> getInterface(model, session),
+                (model, session) -> getInterface(getChatModel(model.getModel()), session),
                 8030,
                 true,
                 false,
@@ -123,7 +52,7 @@ class ProjectGenerator extends PlanHarness {
                 GeminiModels.INSTANCE.getGeminiFlash_30_Preview(),
                 GeminiModels.INSTANCE.getGeminiFlash_30_Preview(),
                 new File(".")
-                );
+        );
         this.cognitiveSettings2 = cognitiveSettings2;
         this.tasks = tasks;
         this.testName = testName;
@@ -145,7 +74,15 @@ class ProjectGenerator extends PlanHarness {
         return resolvedModel.instance(
                 apiKey,
                 api.getBaseUrl(),
-                (AIModel m, ModelSchema.Usage usage) -> incrementUsage(session, m, usage, fileApplicationServices, user)
+                null,
+                new ArrayList<>(),
+                null,
+                1.0,
+                null,
+                (AIModel m, ModelSchema.Usage usage) -> {
+                    incrementUsage(session, m, usage, fileApplicationServices, user);
+                    return kotlin.Unit.INSTANCE;
+                }
         );
     }
 
@@ -179,7 +116,7 @@ class ProjectGenerator extends PlanHarness {
         config.getTaskSettings().put(BrainstormingTask.Companion.getBrainstorming().getName(), new TaskTypeConfig(
                 BrainstormingTask.Companion.getBrainstorming().getName(),
                 BrainstormingTask.Companion.getBrainstorming().getName(),
-                this.getModelInstanceFn().invoke(getFastModel(), session)
+                getChatModel(getFastModel())
         ));
         SubPlanTask.SubPlanTaskTypeConfig subPlanTaskTypeConfig = new SubPlanTask.SubPlanTaskTypeConfig();
         subPlanTaskTypeConfig.setCognitiveSettings(cognitiveSettings2);
@@ -190,7 +127,7 @@ class ProjectGenerator extends PlanHarness {
 
     @Override
     public File createWorkspace() {
-        File workspace = new File(".").toPath().resolve("workspaces/" + testName + "/test-" + now()).toFile();
+        File workspace = new File(".").toPath().resolve("workspaces/" + testName + "/test-" + System.currentTimeMillis()).toFile();
         workspace.mkdirs();
         return workspace;
     }
