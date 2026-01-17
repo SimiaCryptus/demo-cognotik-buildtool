@@ -10,16 +10,17 @@ permissions:
 jobs:
   build-and-fix:
     runs-on: ubuntu-latest
+    environment: DEV
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
