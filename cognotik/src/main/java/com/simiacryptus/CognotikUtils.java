@@ -9,6 +9,7 @@ import com.simiacryptus.cognotik.platform.FileApplicationServices;
 import com.simiacryptus.cognotik.platform.Session;
 import com.simiacryptus.cognotik.platform.file.UserSettingsManager;
 import com.simiacryptus.cognotik.platform.model.*;
+import com.simiacryptus.cognotik.util.PlanHarness;
 import com.simiacryptus.cognotik.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-class CognotikUtils {
+public class CognotikUtils {
     public static final FileApplicationServices fileApplicationServices = ApplicationServices.fileApplicationServices(
             ApplicationServicesConfig.getDataStorageRoot()
     );
-    public static final User user = UserSettingsManager.getDefaultUser();
-    public static final UserSettings userSettings = fileApplicationServices.getUserSettingsManager().getUserSettings(user);
+    public static User user(){
+        return UserSettingsManager.getDefaultUser();
+    }
+
+    public static UserSettings userSettings() {
+        return fileApplicationServices.getUserSettingsManager().getUserSettings(user());
+    }
 
     public static ChatInterface getInterface(ApiChatModel model, Session session) {
         var api = getApi(getName(model));
@@ -51,7 +57,7 @@ class CognotikUtils {
                 (m, usage) -> {
                     fileApplicationServices.getUsageManager().incrementUsage(
                             session,
-                            user,
+                            user(),
                             m,
                             usage
                     );
@@ -69,23 +75,12 @@ class CognotikUtils {
     }
 
     public static ApiData getApi(String providerName) {
-        APIProvider.Companion providers = APIProvider.Companion;
-        if (providerName == providers.getGemini().getName() && System.getenv("GOOGLE_API_KEY") != null) {
-            return getApiData(providers.getGemini(), System.getenv("GOOGLE_API_KEY"));
-        } else if (providerName == providers.getOpenAI().getName() && System.getenv("OPENAI_API_KEY") != null) {
-            return getApiData(providers.getOpenAI(), System.getenv("OPENAI_API_KEY"));
-        } else if (providerName == providers.getAnthropic().getName() && System.getenv("ANTHROPIC_API_KEY") != null) {
-            return getApiData(providers.getAnthropic(), System.getenv("ANTHROPIC_API_KEY"));
-        } else if (providerName == providers.getGroq().getName() && System.getenv("GROQ_API_KEY") != null) {
-            return getApiData(providers.getGroq(), System.getenv("GROQ_API_KEY"));
-        } else {
-            return userSettings.getApis().stream()
-                    .filter(apiData -> {
-                        if (apiData.getProvider() == null) return false;
-                        return apiData.getProvider().getName().equals(providerName);
-                    })
-                    .findFirst().orElse(null);
-        }
+        return userSettings().getApis().stream()
+                .filter(apiData -> {
+                    if (apiData.getProvider() == null) return false;
+                    return apiData.getProvider().getName().equals(providerName);
+                })
+                .findFirst().orElse(null);
     }
 
     @NotNull
@@ -105,6 +100,10 @@ class CognotikUtils {
     }
     private static Logger log = org.slf4j.LoggerFactory.getLogger(CognotikUtils.class);
     public static void configureEnvironmentalKeys() {
+        PlanHarness.Companion.initDynamicEnums();
+        if (APIProvider.values().isEmpty()) {
+            throw new IllegalStateException("No API providers configured");
+        }
         UserSettingsInterface userSettingsManager = ApplicationServices.fileApplicationServices(ApplicationServicesConfig.getDataStorageRoot()).getUserSettingsManager();
         User user = UserSettingsManager.getDefaultUser();
         UserSettings userSettings = userSettingsManager.getUserSettings(user);

@@ -1,5 +1,3 @@
-package com.simiacryptus;
-
 import com.simiacryptus.cognotik.chat.model.ChatModel;
 import com.simiacryptus.cognotik.chat.model.GeminiModels;
 import com.simiacryptus.cognotik.plan.OrchestrationConfig;
@@ -22,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
 
 import java.io.File;
 import java.util.Arrays;

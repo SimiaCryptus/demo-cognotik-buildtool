@@ -12,6 +12,22 @@
           </set>
         </option>
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/cognotik" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/cognotik" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/example" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/example" />
+          </set>
+        </option>
+      </GradleProjectSettings>
     </option>
   </component>
 </project>
