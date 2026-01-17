@@ -2,7 +2,7 @@ name: Agentic Issue Handler
 
 on:
   issues:
-    types: [opened, reopened, labeled]
+    types: [ opened, reopened, labeled ]
 
 permissions:
   contents: write
@@ -47,7 +47,21 @@ jobs:
             -PimplPrompt="Task: Resolve the following GitHub Issue in file (%s). \n\nIssue Title: $TITLE \n\nDescription: $BODY" \
             -PreviewThreads=4
 
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected:"
+            git diff --staged --name-only
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -61,3 +75,16 @@ jobs:
           branch: "agent/issue-${{ github.event.issue.number }}"
           base: main
           labels: automated-pr
+
+      - name: Comment on issue if no changes
+        if: steps.changes.outputs.has_changes == 'false'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            🤖 The agent analyzed this issue but did not produce any code changes.
+            This could mean:
+            - The issue description needs more detail
+            - The requested changes are outside the agent's capabilities
+            - The codebase already satisfies the requirements
+            Please provide more context or manually address this issue.
