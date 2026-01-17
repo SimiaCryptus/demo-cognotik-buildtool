@@ -44,4 +44,5 @@ bin/
 .logs/
 workspaces
 .git
+*.log
 
