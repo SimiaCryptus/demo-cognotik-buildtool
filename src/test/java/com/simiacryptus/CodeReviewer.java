@@ -21,7 +21,7 @@ public class CodeReviewer {
             (source) -> source,
             FileGenerator.OverwriteModes.PatchExisting,
             (source) -> args.length > 3 ? Arrays.asList(args[3].split(",")) : List.of("docs/best_practices.md"),
-            (source, target) -> promptTemplate.contains("%s") ? promptTemplate.replace("%s", target) : promptTemplate + " (" + target + ")",
+            (source, target) -> promptTemplate.contains("%s") ? promptTemplate.replace("%s", target.toString()) : promptTemplate + " (" + target + ")",
             args.length > 4 ? Integer.parseInt(args[4]) : 4
         );
     }
