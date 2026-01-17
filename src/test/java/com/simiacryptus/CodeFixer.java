@@ -4,16 +4,15 @@ import com.simiacryptus.cognotik.chat.model.ChatModel;
 import com.simiacryptus.cognotik.chat.model.GeminiModels;
 import com.simiacryptus.cognotik.plan.tools.TaskTypeConfig;
 import com.simiacryptus.cognotik.plan.tools.file.FileModificationTask;
-import com.simiacryptus.cognotik.platform.Session;
 import com.simiacryptus.cognotik.util.TaskHarness;
 import com.simiacryptus.cognotik.util.UnifiedHarness;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.List;
 
-import static com.simiacryptus.CognotikUtils.getChatModel;
-import static com.simiacryptus.CognotikUtils.getInterface;
+import static com.simiacryptus.CognotikUtils.*;
 
 @SuppressWarnings("unused")
 public class CodeFixer {
@@ -21,6 +20,7 @@ public class CodeFixer {
     public static final int PORT = 8030;
 
     public static void main(String[] args) {
+        configureEnvironmentalKeys();
         UnifiedHarness.configurePlatform();
         ChatModel chatModel = GeminiModels.getGeminiFlash_30_Preview();
         var fileModification = FileModificationTask.getFileModification();
@@ -54,4 +54,6 @@ public class CodeFixer {
             }
         }.run();
     }
+
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(CodeFixer.class);
 }

@@ -21,6 +21,7 @@ import com.simiacryptus.cognotik.util.UnifiedHarness;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.io.File;
@@ -42,7 +43,12 @@ public class ProjectGeneratorMatrix {
         UnifiedHarness.configurePlatform();
     }
 
-    @TestFactory
+    @Test
+    public void singleTest() {
+        // Do nothing
+    }
+
+    //@TestFactory
     public List<DynamicTest> tests() {
         List<CognitiveModeConfig> cognitiveSettingsList = Arrays.asList(
                 new WaterfallModeConfig(),

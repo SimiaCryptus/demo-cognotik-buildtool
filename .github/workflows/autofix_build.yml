@@ -10,16 +10,17 @@ permissions:
 jobs:
   build-and-fix:
     runs-on: ubuntu-latest
+    environment: DEV
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
@@ -38,11 +39,9 @@ jobs:
         run: |
           echo "Build failed. Engaging Agent to fix implementation files..."
           
-          ./gradlew codeReview \
-            -PreviewPrompt="The build is failing. Review and fix the implementation in file (%s) to ensure all unit tests pass and code adheres to best practices." \
-            -PreviewSrc="src/main/java" \
-            -PreviewThreads=4 \
-            -PreviewDocs="build.log"
+          ./gradlew codeFixer -x :failtest:codeFixer \
+            -PfixPrompt="The build is failing. Review and fix the implementation in file (%s) to ensure all unit tests pass and code adheres to best practices." \
+            -PfixLog="build.log"
 
       - name: Verify Fix
         if: steps.run_tests.outcome == 'failure'
@@ -53,4 +52,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "fix: auto-correction by agentic build validator"
-          file_pattern: 'src/main/java/**'
+          file_pattern: '**'
