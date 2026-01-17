@@ -1,0 +1,73 @@
+Downloading https://services.gradle.org/distributions/gradle-9.2.0-bin.zip
+............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 9.2.0!
+
+Here are the highlights of this release:
+ - Windows ARM support
+ - Improved publishing APIs
+ - Better guidance for dependency verification failures
+
+For more details see https://docs.gradle.org/9.2.0/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+
+> Task :compileTestJava
+warning: unknown enum constant Id.CUSTOM
+  reason: class file for com.fasterxml.jackson.annotation.JsonTypeInfo$Id not found
+warning: unknown enum constant As.EXISTING_PROPERTY
+  reason: class file for com.fasterxml.jackson.annotation.JsonTypeInfo$As not found
+warning: unknown enum constant Id.CUSTOM
+warning: unknown enum constant As.EXISTING_PROPERTY
+warning: unknown enum constant Id.CUSTOM
+5 warnings
+
+> Task :processTestResources
+> Task :testClasses
+> Task :test
+
+> Task :failtest:compileJava FAILED
+/home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: not a statement
+        this does not compile
+        ^
+/home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: ';' expected
+        this does not compile
+            ^
+/home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: ';' expected
+        this does not compile
+                     ^
+/home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:10: error: ';' expected
+        System.out.printf("Hello and welcome!");
+              ^
+4 errors
+
+[Incubating] Problems report is available at: file:///home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':failtest:compileJava'.
+> Compilation failed; see the compiler output below.
+  /home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: not a statement
+          this does not compile
+          ^
+  /home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: ';' expected
+          this does not compile
+              ^
+  /home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:7: error: ';' expected
+          this does not compile
+                       ^
+  /home/runner/work/demo-cognotik-buildtool/demo-cognotik-buildtool/failtest/src/main/java/com/simiacryptus/Main.java:10: error: ';' expected
+          System.out.printf("Hello and welcome!");
+                ^
+  4 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to generate a Build Scan (powered by Develocity).
+
+BUILD FAILED in 33s
+5 actionable tasks: 5 executed
