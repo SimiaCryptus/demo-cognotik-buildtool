@@ -11,15 +11,56 @@ repositories {
 
 dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'software.amazon.awssdk:kms:2.41.7'
+    implementation 'software.amazon.awssdk:s3:2.41.7'
 
-    testImplementation('com.cognotik:core:2.0.42')
-    testImplementation('com.cognotik:webui:2.0.42')
-    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib:2.3.0'
-    testImplementation 'com.google.guava:guava:33.4.8-jre'
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation ('org.junit.jupiter:junit-jupiter')
+    testImplementation 'com.cognotik:core:2.0.44'
+    testImplementation 'com.cognotik:webui:2.0.44'
+    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.23'
+    testImplementation 'com.google.guava:guava:33.1.0-jre'
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('codeImplementer', JavaExec) {
+    group = "cognotik"
+    description = "Runs the CodeImplementer"
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.simiacryptus.CodeImplementer"
+    standardOutput = System.out
+    errorOutput = System.err
+}
+
+tasks.register('codeFixer', JavaExec) {
+    group = "cognotik"
+    description = "Runs the CodeFixer"
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.simiacryptus.CodeFixer"
+    standardOutput = System.out
+    errorOutput = System.err
+    def prompt = project.hasProperty('fixPrompt') ? project.property('fixPrompt') : 'Fix the build errors reported in build.log'
+    def log = project.hasProperty('fixLog') ? project.property('fixLog') : 'build.log'
+    args = [prompt, log]
+}
+
+
+tasks.register('codeReview', JavaExec) {
+    group = "cognotik"
+    description = "Runs the Cognotik CodeReviewer. Usage: ./gradlew codeReview -PreviewPrompt='Fix bugs in %s' -PreviewSrc='src/main/java'"
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.simiacryptus.CodeReviewer"
+    def rootDir = project.hasProperty('reviewRoot') ? project.property('reviewRoot') : '.'
+    def srcDir = project.hasProperty('reviewSrc') ? project.property('reviewSrc') : 'src/main/java'
+    // Use %s in the prompt to insert the filename being reviewed
+    def prompt = project.hasProperty('reviewPrompt') ? project.property('reviewPrompt') : 'Update implementation file (%s) according to the standards documents'
+    def docs = project.hasProperty('reviewDocs') ? project.property('reviewDocs') : 'docs/best_practices.md'
+    def threads = project.hasProperty('reviewThreads') ? project.property('reviewThreads') : '4'
+    args = [rootDir, srcDir, prompt, docs, threads]
+    // Ensure output is visible in CI logs
+    standardOutput = System.out
+    errorOutput = System.err
 }
