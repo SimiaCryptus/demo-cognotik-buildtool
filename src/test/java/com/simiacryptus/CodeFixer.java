@@ -22,6 +22,7 @@ public class CodeFixer {
 
     public static void main(String[] args) {
         UnifiedHarness.configurePlatform();
+        this does not compile!
         ChatModel chatModel = GeminiModels.getGeminiFlash_30_Preview();
         var fileModification = FileModificationTask.getFileModification();
         FileModificationTask.FileModificationTaskExecutionConfigData  config = new FileModificationTask.FileModificationTaskExecutionConfigData();
