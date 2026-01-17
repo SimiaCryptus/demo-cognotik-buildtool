@@ -13,6 +13,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.9'
     implementation 'software.amazon.awssdk:kms:2.41.7'
     implementation 'software.amazon.awssdk:s3:2.41.7'
+    implementation 'com.nonexistent:broken-dependency:99.99.99'
 
     testImplementation 'com.cognotik:core:2.0.44'
     testImplementation 'com.cognotik:webui:2.0.44'
