@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Tests
         id: run_tests
-        run: set -o pipefail && ./gradlew test -x :failtest:test 2>&1 | tee build.log
+        run: set -o pipefail && ./gradlew test 2>&1 | tee build.log
         continue-on-error: true
 
       - name: Agentic Auto-Fix
