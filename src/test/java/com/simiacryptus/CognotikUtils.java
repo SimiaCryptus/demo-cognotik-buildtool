@@ -12,10 +12,12 @@ import com.simiacryptus.cognotik.platform.model.*;
 import com.simiacryptus.cognotik.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 class CognotikUtils {
@@ -100,5 +102,41 @@ class CognotikUtils {
         APIProvider provider = chatModel.getProvider();
         ApiData apiData = getApi(provider != null ? provider.getName() : null);
         return new ApiChatModel(chatModel, apiData);
+    }
+    private static Logger log = org.slf4j.LoggerFactory.getLogger(CognotikUtils.class);
+    public static void configureEnvironmentalKeys() {
+        UserSettingsInterface userSettingsManager = ApplicationServices.fileApplicationServices(ApplicationServicesConfig.getDataStorageRoot()).getUserSettingsManager();
+        User user = UserSettingsManager.getDefaultUser();
+        UserSettings userSettings = userSettingsManager.getUserSettings(user);
+        boolean anythingChanged = false;
+        anythingChanged |= setProvider(userSettings, "GOOGLE_API_KEY", APIProvider.Companion.getGemini());
+        anythingChanged |= setProvider(userSettings, "OPENAI_API_KEY", APIProvider.Companion.getOpenAI());
+        anythingChanged |= setProvider(userSettings, "ANTHROPIC_API_KEY", APIProvider.Companion.getAnthropic());
+        anythingChanged |= setProvider(userSettings, "GROQ_API_KEY", APIProvider.Companion.getGroq());
+        if (anythingChanged) {
+            log.info("Updating user settings with new API keys.");
+            userSettingsManager.updateUserSettings(user, userSettings);
+        } else {
+            log.info("No API keys found in environment variables.");
+        }
+    }
+
+    public static boolean setProvider(UserSettings userSettings, String keyName, APIProvider provider) {
+        if(System.getenv(keyName) != null) {
+            log.info("Configuring API key for provider: " + provider.getName());
+            List<ApiData> apis = userSettings.getApis();
+            // find any existing entry for this provider and remove it
+            apis.removeIf(apiData -> apiData.getProvider().getName().equals(provider.getName()));
+            // add new entry
+            apis.add(new ApiData(
+                    provider.getName(),
+                    new SecureString(System.getenv(keyName)),
+                    provider.getBase(),
+                    provider
+            ));
+            return true;
+        } else {
+            return false;
+        }
     }
 }

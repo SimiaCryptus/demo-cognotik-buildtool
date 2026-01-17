@@ -18,16 +18,26 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.simiacryptus.CognotikUtils.getChatModel;
-import static com.simiacryptus.CognotikUtils.getInterface;
+import static com.simiacryptus.CognotikUtils.*;
 
 @SuppressWarnings("unused")
 public class CodeImplementer {
-    public static final String PROMPT = "Build a fun and unique game using java and gradle.";
-    public static final int PORT = 8030;
+    public static final String DEFAULT_PROMPT = "Build a fun and unique game using java and gradle.";
+    public static final int DEFAULT_PORT = 8030;
+    public static final String DEFAULT_WORKSPACE = ".";
+    public static final int DEFAULT_TIMEOUT = 30;
+    public static final boolean DEFAULT_HEADLESS = true;
 
     public static void main(String[] args) {
+        configureEnvironmentalKeys();
         UnifiedHarness.configurePlatform();
+        // Parse arguments with defaults
+        String prompt = getArg(args, 0, DEFAULT_PROMPT);
+        int port = Integer.parseInt(getArg(args, 1, String.valueOf(DEFAULT_PORT)));
+        String workspaceRoot = getArg(args, 2, DEFAULT_WORKSPACE);
+        int timeout = Integer.parseInt(getArg(args, 3, String.valueOf(DEFAULT_TIMEOUT)));
+        boolean headless = Boolean.parseBoolean(getArg(args, 4, String.valueOf(DEFAULT_HEADLESS)));
+        
         ChatModel chatModel = GeminiModels.getGeminiFlash_30_Preview();
         var fileModification = FileModificationTask.getFileModification();
         Map<String, TaskTypeConfig> tasks = new HashMap<>();
@@ -35,17 +45,17 @@ public class CodeImplementer {
         AutoFixTask.AutoFixTaskTypeConfig autoFixConfig = new AutoFixTask.AutoFixTaskTypeConfig();
         autoFixConfig.setModel(getChatModel(chatModel));
         tasks.put(AutoFixTask.getAutoFix().getName(), autoFixConfig);
-        new PlanHarness(PROMPT,
+        new PlanHarness(prompt,
                 new WaterfallModeConfig(),
                 (model, session) -> getInterface(getChatModel(model.getModel()), session),
-                PORT,
-                true,
+                port,
+                headless,
                 false,
-                30,
+                timeout,
                 chatModel,
                 chatModel,
                 chatModel,
-                new File(".")) {
+                new File(workspaceRoot)) {
             @NotNull
             @Override
             public OrchestrationConfig newConfig(@NotNull Session session, @NotNull File tempDir) {
@@ -66,11 +76,14 @@ public class CodeImplementer {
             @NotNull
             @Override
             public File createTempDirectory() {
-                File workspace = new File(".", "workspaces/" + "CodeImplementer" + "/test-" + System.currentTimeMillis());
+                File workspace = new File(workspaceRoot, "workspaces/" + "CodeImplementer" + "/test-" + System.currentTimeMillis());
                 //noinspection ResultOfMethodCallIgnored
                 workspace.mkdirs();
                 return workspace;
             }
         }.run();
+    }
+    private static String getArg(String[] args, int index, String defaultValue) {
+        return args.length > index && args[index] != null && !args[index].isEmpty() ? args[index] : defaultValue;
     }
 }

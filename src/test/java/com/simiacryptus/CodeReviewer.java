@@ -8,21 +8,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.simiacryptus.CognotikUtils.configureEnvironmentalKeys;
 import static com.simiacryptus.CognotikUtils.relativize;
 
 public class CodeReviewer {
+    public static final String DEFAULT_ROOT = ".";
+    public static final String DEFAULT_SRC = "src/main/java";
+    public static final String DEFAULT_PROMPT = "Update implementation file (%s) according to the standards documents";
+    public static final String DEFAULT_DOCS = "docs/best_practices.md";
+    public static final int DEFAULT_THREADS = 4;
+    public static final String DEFAULT_OVERWRITE_MODE = "PatchExisting";
+    
     public static void main(String[] args) {
+        configureEnvironmentalKeys();
         UnifiedHarness.configurePlatform();
-        String promptTemplate = args.length > 2 ? args[2] : "Update implementation file (%s) according to the standards documents";
+        
+        // Parse arguments with defaults
+        String rootDir = getArg(args, 0, DEFAULT_ROOT);
+        String srcDir = getArg(args, 1, DEFAULT_SRC);
+        String promptTemplate = getArg(args, 2, DEFAULT_PROMPT);
+        String docsArg = getArg(args, 3, DEFAULT_DOCS);
+        int threads = Integer.parseInt(getArg(args, 4, String.valueOf(DEFAULT_THREADS)));
+        String overwriteMode = getArg(args, 5, DEFAULT_OVERWRITE_MODE);
+        
+        List<String> docsList = Arrays.asList(docsArg.split(","));
+        FileGenerator.OverwriteModes mode = FileGenerator.OverwriteModes.valueOf(overwriteMode);
+        
         new FileGenerator() {}.run(
-            args.length > 0 ? new File(args[0]) : new File("."),
-            args.length > 1 ? new File(args[1]) : new File("src/main/java"),
+            new File(rootDir),
+            new File(srcDir),
             (root, folder) -> Arrays.stream(Objects.requireNonNull(folder.listFiles())).map(file -> relativize(root, file)).toList(),
             (source) -> source,
-            FileGenerator.OverwriteModes.PatchExisting,
-            (source) -> args.length > 3 ? Arrays.asList(args[3].split(",")) : List.of("docs/best_practices.md"),
+            mode,
+            (source) -> docsList,
             (source, target) -> promptTemplate.contains("%s") ? promptTemplate.replace("%s", target.toString()) : promptTemplate + " (" + target + ")",
-            args.length > 4 ? Integer.parseInt(args[4]) : 4
+            threads
         );
+    }
+    private static String getArg(String[] args, int index, String defaultValue) {
+        return args.length > index && args[index] != null && !args[index].isEmpty() ? args[index] : defaultValue;
     }
 }
