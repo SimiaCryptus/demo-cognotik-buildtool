@@ -43,7 +43,7 @@ jobs:
           
           echo "Agent is analyzing issue: $ISSUE_TITLE"
           
-          ./gradlew codeImplementer \
+          ./gradlew -p cognotik codeImplementer \
             -PimplPrompt="Task: Resolve the following GitHub Issue in file (%s). \n\nIssue Title: $TITLE \n\nDescription: $BODY" \
             -PreviewThreads=4
 

@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Tests
         id: run_tests
-        run: set -o pipefail && ./gradlew test 2>&1 | tee build.log
+        run: set -o pipefail && ./gradlew -p example test 2>&1 | tee build.log
         continue-on-error: true
 
       - name: Agentic Auto-Fix
@@ -39,13 +39,13 @@ jobs:
         run: |
           echo "Build failed. Engaging Agent to fix implementation files..."
           
-          ./gradlew codeFixer \
+          ./gradlew -p cognotik codeFixer \
             -PfixPrompt="The build is failing. Review and fix the implementation in file (%s) to ensure all unit tests pass and code adheres to best practices." \
             -PfixLog="build.log"
 
       - name: Verify Fix
         if: steps.run_tests.outcome == 'failure'
-        run: ./gradlew test
+        run: ./gradlew -p example test
 
       - name: Commit Fixes
         if: steps.run_tests.outcome == 'failure'

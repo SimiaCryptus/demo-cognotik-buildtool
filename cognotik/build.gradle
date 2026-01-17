@@ -14,11 +14,12 @@ dependencies {
     implementation 'software.amazon.awssdk:kms:2.41.7'
     implementation 'software.amazon.awssdk:s3:2.41.7'
 
-    testImplementation 'com.cognotik:core:2.0.44'
-    testImplementation 'com.cognotik:webui:2.0.44'
+    implementation 'com.cognotik:core:2.0.44'
+    implementation 'com.cognotik:webui:2.0.44'
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.23'
-    testImplementation 'com.google.guava:guava:33.1.0-jre'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.23'
+    implementation 'com.google.guava:guava:33.1.0-jre'
+
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
