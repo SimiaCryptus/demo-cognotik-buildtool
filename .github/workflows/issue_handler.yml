@@ -44,7 +44,7 @@ jobs:
           echo "Agent is analyzing issue: $ISSUE_TITLE"
           
           ./gradlew codeImplementer \
-            -pimplPrompt="Task: Resolve the following GitHub Issue in file (%s). \n\nIssue Title: $TITLE \n\nDescription: $BODY" \
+            -PimplPrompt="Task: Resolve the following GitHub Issue in file (%s). \n\nIssue Title: $TITLE \n\nDescription: $BODY" \
             -PreviewThreads=4
 
       - name: Create Pull Request
