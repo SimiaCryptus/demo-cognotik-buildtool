@@ -33,10 +33,10 @@ tasks.register('codeImplementer', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = "com.simiacryptus.CodeImplementer"
     def prompt = project.hasProperty('implPrompt') ? project.property('implPrompt') : ''
-    def port = project.hasProperty('implPort') ? project.property('implPort') : ''
-    def workspace = project.hasProperty('implWorkspace') ? project.property('implWorkspace') : ''
-    def timeout = project.hasProperty('implTimeout') ? project.property('implTimeout') : ''
-    def headless = project.hasProperty('implHeadless') ? project.property('implHeadless') : ''
+    def port = project.hasProperty('implPort') ? project.property('implPort') : '0'
+    def workspace = project.hasProperty('implWorkspace') ? project.property('implWorkspace') : '.'
+    def timeout = project.hasProperty('implTimeout') ? project.property('implTimeout') : '30'
+    def headless = project.hasProperty('implHeadless') ? project.property('implHeadless') : 'true'
     args = [prompt, port, workspace, timeout, headless]
     standardOutput = System.out
     errorOutput = System.err
