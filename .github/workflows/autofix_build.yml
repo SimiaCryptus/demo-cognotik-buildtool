@@ -45,11 +45,11 @@ jobs:
 
       - name: Verify Fix
         if: steps.run_tests.outcome == 'failure'
-        run: ./gradlew test -x :failtest:test
+        run: ./gradlew test
 
       - name: Commit Fixes
         if: steps.run_tests.outcome == 'failure'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "fix: auto-correction by agentic build validator"
-          file_pattern: 'src/main/java/**'
+          file_pattern: '**'
