@@ -27,7 +27,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run Agentic Code Reviewer
+      - name: Run Agentic Code Implementer
         env:
           # Ensure your repository secrets are mapped to the env vars your UnifiedHarness expects
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
