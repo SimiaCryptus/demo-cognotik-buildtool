@@ -20,15 +20,24 @@ public class CodeFixer {
     public static final int PORT = 8030;
 
     public static void main(String[] args) {
+        String taskDescription = args.length > 0 ? args[0] : PROMPT;
+        List<String> relatedFiles = List.of(
+                args.length > 1 ? args[1] : "build.log"
+        );
         configureEnvironmentalKeys();
         UnifiedHarness.configurePlatform();
+        run(taskDescription, relatedFiles);
+    }
+
+    public static void run(String taskDescription,
+                           List<String> relatedFiles) {
         ChatModel chatModel = GeminiModels.getGeminiFlash_30_Preview();
+
         var fileModification = FileModificationTask.getFileModification();
         FileModificationTask.FileModificationTaskExecutionConfigData  config = new FileModificationTask.FileModificationTaskExecutionConfigData();
-        config.setTask_description(args.length > 0 ? args[0] : PROMPT);
-        config.setRelated_files(List.of(
-                args.length > 1 ? args[1] : "build.log"
-        ));
+        config.setTask_description(taskDescription);
+        config.setRelated_files(relatedFiles);
+
         new TaskHarness<>(
                 fileModification,
                 new TaskTypeConfig(fileModification.getName(), fileModification.getName(), getChatModel(chatModel)),

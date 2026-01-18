@@ -2,9 +2,6 @@ plugins {
     id 'java'
 }
 
-group = 'com.simiacryptus'
-version = '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
@@ -14,18 +11,13 @@ dependencies {
     implementation 'software.amazon.awssdk:kms:2.41.7'
     implementation 'software.amazon.awssdk:s3:2.41.7'
 
-    implementation 'com.cognotik:core:2.0.44'
-    implementation 'com.cognotik:webui:2.0.44'
+    implementation 'com.cognotik:core:2.0.45'
+    implementation 'com.cognotik:webui:2.0.45'
+//    implementation project(':core')
+//    implementation project(':webui')
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.23'
     implementation 'com.google.guava:guava:33.1.0-jre'
-
-    testImplementation platform('org.junit:junit-bom:5.10.2')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
-
-test {
-    useJUnitPlatform()
 }
 
 tasks.register('codeImplementer', JavaExec) {
@@ -33,7 +25,7 @@ tasks.register('codeImplementer', JavaExec) {
     description = "Runs the CodeImplementer. Usage: ./gradlew codeImplementer -PimplPrompt='Build X' -PimplPort=8030 -PimplWorkspace='.' -PimplTimeout=30 -PimplHeadless=true"
     classpath = sourceSets.test.runtimeClasspath
     mainClass = "com.simiacryptus.CodeImplementer"
-    def prompt = project.hasProperty('implPrompt') ? project.property('implPrompt') : ''
+    def prompt = project.hasProperty('implPrompt') ? project.property('implPrompt') : 'Make a Java class that implements a basic RESTful API'
     def port = project.hasProperty('implPort') ? project.property('implPort') : '0'
     def workspace = project.hasProperty('implWorkspace') ? project.property('implWorkspace') : '.'
     def timeout = project.hasProperty('implTimeout') ? project.property('implTimeout') : '30'

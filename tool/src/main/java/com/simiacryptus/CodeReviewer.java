@@ -30,10 +30,13 @@ public class CodeReviewer {
         String docsArg = getArg(args, 3, DEFAULT_DOCS);
         int threads = Integer.parseInt(getArg(args, 4, String.valueOf(DEFAULT_THREADS)));
         String overwriteMode = getArg(args, 5, DEFAULT_OVERWRITE_MODE);
-        
+
+        run(docsArg, overwriteMode, rootDir, srcDir, promptTemplate, threads);
+    }
+
+    public static void run(String docsArg, String overwriteMode, String rootDir, String srcDir, String promptTemplate, int threads) {
         List<String> docsList = Arrays.asList(docsArg.split(","));
         FileGenerator.OverwriteModes mode = FileGenerator.OverwriteModes.valueOf(overwriteMode);
-        
         new FileGenerator() {}.run(
             new File(rootDir),
             new File(srcDir),
@@ -45,6 +48,7 @@ public class CodeReviewer {
             threads
         );
     }
+
     private static String getArg(String[] args, int index, String defaultValue) {
         return args.length > index && args[index] != null && !args[index].isEmpty() ? args[index] : defaultValue;
     }

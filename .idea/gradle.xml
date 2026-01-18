@@ -4,29 +4,7 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/cognotik" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/cognotik" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/example" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/example" />
-          </set>
-        </option>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/tool" />
       </GradleProjectSettings>
     </option>
   </component>
