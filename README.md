@@ -2,218 +2,95 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**Cognotik** is a powerful AI-powered code automation framework that enables intelligent code review, generation, and modification using large language models (LLMs). It provides a flexible harness for running AI agents that can analyze, fix, and implement code changes across your projects.
+The **Cognotik Build Integration Demo** showcases how to integrate [Cognotik](https://github.com/SimiaCryptus/Cognotik) as a build and automation tool using GitHub Actions. This repository provides working examples of AI-powered code review, automated bug fixing, and intelligent issue resolution integrated directly into your CI/CD pipeline.
 
 ## Table of Contents
 
 - [Features](#features)
 - [Quick Start](#quick-start)
-- [Installation](#installation)
-- [Configuration](#configuration)
 - [Usage](#usage)
+- [What is Cognotik?](#what-is-cognotik)
+- [GitHub Actions Workflows](#github-actions-workflows)
+  - [Auto-Fixing Build Validator](#auto-fixing-build-validator)
+  - [Agentic Issue Handler](#agentic-issue-handler)
+- [Configuration](#configuration)
   - [Code Reviewer](#code-reviewer)
   - [Code Fixer](#code-fixer)
   - [Code Implementer](#code-implementer)
-- [GitHub Actions Integration](#github-actions-integration)
-  - [Auto-Fixing Build Validator](#auto-fixing-build-validator)
-  - [Agentic Issue Handler](#agentic-issue-handler)
 - [API Providers](#api-providers)
-- [Architecture](#architecture)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Features
 
+- 🔄 **Ready-to-Use GitHub Actions**: Pre-configured workflows for immediate integration
+- 🔧 **Automated Build Fixing**: Automatically fix failing builds in pull requests
+- 🎫 **Intelligent Issue Resolution**: AI agents that create PRs to resolve GitHub issues
 - 🤖 **Multi-Model Support**: Works with OpenAI, Google Gemini, Anthropic Claude, and Groq
-- 📝 **Intelligent Code Review**: Automatically review code against best practices and standards
-- 🔧 **Automated Bug Fixing**: Parse build logs and fix compilation/test errors
-- 🏗️ **Code Generation**: Generate new code implementations from natural language descriptions
-- 🔄 **GitHub Actions Integration**: Seamlessly integrate with CI/CD pipelines
-- 📊 **Usage Tracking**: Built-in usage monitoring and cost tracking
-- 🧩 **Extensible Task System**: Modular task types for different automation scenarios
-- 🌊 **Waterfall Planning**: Sophisticated multi-step task orchestration
+- 📝 **Code Review Automation**: Review code against best practices and standards
+- 🏗️ **Code Generation**: Generate implementations from natural language descriptions
+- 📚 **Documentation Processing**: Automatically update code and docs based on markdown specifications
 
 ## Quick Start
 
+### 1. Fork or Clone This Repository
+
 ```bash
-# Clone the repository
-git clone https://github.com/SimiaCryptus/Cognotik.git
-cd Cognotik
+git clone https://github.com/SimiaCryptus/CognotikDemo.git
+cd CognotikDemo
+```
 
-# Set up your API keys
+### 2. Configure Repository Secrets
+
+Add the following secrets to your GitHub repository (Settings → Secrets and variables → Actions):
+
+- `OPENAI_API_KEY` - Your OpenAI API key
+- `GOOGLE_API_KEY` - Your Google Gemini API key (recommended)
+
+### 3. Enable GitHub Actions
+
+The workflows in `.github/workflows/` will automatically:
+- Fix failing builds in pull requests
+- Create PRs to resolve issues labeled with `agent-help`
+
+### 4. Local Development (Optional)
+
+```bash
 export GOOGLE_API_KEY="your-google-api-key"
-# or
-export OPENAI_API_KEY="your-openai-api-key"
 
-# Run code review
 ./gradlew codeReview -PreviewPrompt="Review and improve code quality in file (%s)"
 ```
 
-## Installation
+## What is Cognotik?
 
-### Gradle
+[Cognotik](https://github.com/SimiaCryptus/Cognotik) is a powerful AI-powered code automation framework that enables intelligent code review, generation, and modification using large language models (LLMs). This demo project shows how to leverage Cognotik's capabilities within GitHub Actions workflows.
 
-Add the following to your `build.gradle`:
+### Key Cognotik Components Used
 
-```groovy
-dependencies {
-  implementation 'com.cognotik:core:2.0.44'
-  implementation 'com.cognotik:webui:2.0.44'
-}
-```
+- **Code Reviewer**: Analyzes source files against standards and suggests improvements
+- **Code Fixer**: Parses build logs and automatically fixes compilation/test errors
+- **Code Implementer**: Generates new code from natural language descriptions
 
-### Maven
 
-```xml
-<dependency>
-    <groupId>com.cognotik</groupId>
-    <artifactId>core</artifactId>
-    <version>2.0.44</version>
-</dependency>
-<dependency>
-    <groupId>com.cognotik</groupId>
-    <artifactId>webui</artifactId>
-    <version>2.0.44</version>
-</dependency>
-```
 
-### Building from Source
+## GitHub Actions Workflows
 
-```bash
-git clone https://github.com/SimiaCryptus/Cognotik.git
-cd Cognotik
-./gradlew build
-```
-
-## Configuration
-
-### Environment Variables
-
-Cognotik supports multiple AI providers. Configure your preferred provider using environment variables:
-
-| Variable            | Description              |
-|---------------------|--------------------------|
-| `GOOGLE_API_KEY`    | Google Gemini API key    |
-| `OPENAI_API_KEY`    | OpenAI API key           |
-| `ANTHROPIC_API_KEY` | Anthropic Claude API key |
-| `GROQ_API_KEY`      | Groq API key             |
-
-### User Settings
-
-For persistent configuration, Cognotik uses a file-based settings manager. API credentials and preferences are stored in the application's data storage root directory.
-
-## Usage
-
-### Code Reviewer
-
-The Code Reviewer analyzes your source files against standards documents and suggests improvements.
-
-#### Command Line
-
-```bash
-./gradlew codeReview \
-  -PreviewPrompt="Update implementation file (%s) according to the standards documents" \
-  -PreviewSrc="src/main/java" \
-  -PreviewDocs="docs/best_practices.md" \
-  -PreviewThreads=4
-```
-
-#### Programmatic Usage
-
-```java
-import com.simiacryptus.CodeReviewer;
-
-public class Example {
-    public static void main(String[] args) {
-        CodeReviewer.main(new String[]{
-            ".",                          // Root directory
-            "src/main/java",              // Source directory
-            "Review code in file (%s)",   // Prompt template
-            "docs/standards.md",          // Reference documents
-            "4"                           // Thread count
-        });
-    }
-}
-```
-
-#### Parameters
-
-| Parameter | Description                       | Default                                                                |
-|-----------|-----------------------------------|------------------------------------------------------------------------|
-| `args[0]` | Root directory                    | `.`                                                                    |
-| `args[1]` | Source directory to review        | `src/main/java`                                                        |
-| `args[2]` | Prompt template (`%s` = filename) | `Update implementation file (%s) according to the standards documents` |
-| `args[3]` | Comma-separated reference docs    | `docs/best_practices.md`                                               |
-| `args[4]` | Number of parallel threads        | `4`                                                                    |
-
-### Code Fixer
-
-The Code Fixer analyzes build logs and automatically fixes compilation or test errors.
-
-#### Programmatic Usage
-
-```java
-import com.simiacryptus.CodeFixer;
-
-public class Example {
-    public static void main(String[] args) {
-        // Fix build errors from build.log
-        CodeFixer.main(new String[]{
-            "Fix the build errors reported in build.log",
-            "build.log"
-        });
-    }
-}
-```
-
-#### How It Works
-
-1. Parses the specified build log file
-2. Identifies error patterns and affected files
-3. Uses AI to understand the root cause
-4. Generates and applies fixes
-5. Optionally re-runs the build to verify
-
-### Code Implementer
-
-The Code Implementer generates new code from natural language descriptions using a sophisticated planning system.
-
-#### Programmatic Usage
-
-```java
-import com.simiacryptus.CodeImplementer;
-
-public class Example {
-    public static void main(String[] args) {
-        // Generate a new application
-        CodeImplementer.main(new String[]{});
-    }
-}
-```
-
-#### Features
-
-- **Brainstorming**: Generates multiple approaches to solve the problem
-- **Waterfall Planning**: Breaks down complex tasks into manageable steps
-- **Sub-Plan Tasks**: Handles nested task hierarchies
-- **Auto-Fix Integration**: Automatically fixes issues during implementation
-
-## GitHub Actions Integration
-
-Cognotik provides ready-to-use GitHub Actions workflows for automated code maintenance.
+This demo includes two pre-configured GitHub Actions workflows that showcase Cognotik's automation capabilities.
 
 ### Auto-Fixing Build Validator
 
-Automatically fixes failing builds in pull requests.
+**File:** `.github/workflows/autofix_build.yml`
 
-#### Setup
+Automatically detects and fixes failing builds in pull requests.
 
-1. Copy `_github/workflows/autofix_build.yml` to `.github/workflows/autofix_build.yml`
-2. Add your API keys as repository secrets:
-  - `OPENAI_API_KEY`
-  - `GOOGLE_API_KEY`
+#### How It Works
 
-#### Workflow
+1. Triggered on pull requests to `main`
+2. Runs the test suite and captures output to `build.log`
+3. If tests fail, invokes Cognotik's Code Fixer agent
+4. Agent analyzes the build log and fixes implementation files
+5. Verifies the fix by re-running tests
+6. Commits the fixes automatically
 
 ```yaml
 name: Auto-Fixing Build Validator
@@ -222,192 +99,189 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: write
 
 jobs:
   build-and-fix:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
 
       - name: Run Tests
         id: run_tests
-        run: set -o pipefail && ./gradlew test 2>&1 | tee build.log
+        run: ./gradlew test 2>&1 | tee build.log
         continue-on-error: true
 
       - name: Agentic Auto-Fix
         if: steps.run_tests.outcome == 'failure'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          ./gradlew codeReview \
-            -PreviewPrompt="The build is failing. Review and fix the implementation in file (%s)" \
-            -PreviewSrc="src/main/java" \
-            -PreviewDocs="build.log"
 
-      - name: Commit Fixes
-        if: steps.run_tests.outcome == 'failure'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "fix: auto-correction by agentic build validator"
+          ./gradlew codeFixer \
+            -PfixPrompt="Fix the build errors" \
+            -PfixLog="build.log"
 ```
 
 ### Agentic Issue Handler
 
-Automatically creates pull requests to resolve GitHub issues.
+**File:** `.github/workflows/issue_handler.yml`
 
-#### Setup
-
-1. Copy `_github/workflows/issue_handler.yml` to `.github/workflows/issue_handler.yml`
-2. Add your API keys as repository secrets
+Automatically creates pull requests to resolve GitHub issues labeled with `agent-help`.
 
 #### How It Works
 
 1. Triggered when an issue is opened or labeled with `agent-help`
 2. Analyzes the issue title and description
-3. Reviews relevant source files
-4. Creates a pull request with proposed fixes
+3. Invokes Cognotik's Code Implementer agent
+4. Agent reviews relevant source files and generates fixes
+5. Creates a pull request with the proposed changes
+6. Comments on the issue if no changes were needed
 
-#### Workflow
+#### Usage
 
-```yaml
-name: Agentic Issue Handler
+1. Create a new issue describing the bug or feature
+2. Add the `agent-help` label
+3. Wait for the agent to analyze and create a PR
 
-on:
-  issues:
-    types: [opened, reopened, labeled]
+## Configuration
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+### Required Repository Secrets
 
-jobs:
-  resolve-issue:
-    if: contains(github.event.issue.labels.*.name, 'agent-help')
-    runs-on: ubuntu-latest
-    steps:
-      # ... checkout and setup steps ...
-      
-      - name: Run Agentic Code Reviewer
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        run: |
-          ./gradlew codeReview \
-            -PreviewPrompt="Resolve the following GitHub Issue in file (%s). Issue: ${{ github.event.issue.title }}"
+| Secret            | Description              | Required |
+|-------------------|--------------------------|----------|
+| `GOOGLE_API_KEY`  | Google Gemini API key    | Yes*     |
+| `OPENAI_API_KEY`  | OpenAI API key           | Yes*     |
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: "fix: resolve issue #${{ github.event.issue.number }}"
-          branch: "agent/issue-${{ github.event.issue.number }}"
+
+*At least one API key is required. Google Gemini is recommended for best results.
+
+### Optional Secrets
+
+| Secret              | Description              |
+|---------------------|--------------------------|
+| `ANTHROPIC_API_KEY` | Anthropic Claude API key |
+| `GROQ_API_KEY`      | Groq API key             |
+
+## Usage
+
+### Gradle Tasks
+
+This demo provides three main Gradle tasks:
+
+#### Code Reviewer
+
+```bash
+./gradlew codeReview \
+  -PreviewPrompt="Update implementation file (%s) according to best practices" \
+  -PreviewSrc="src/main/java" \
+  -PreviewThreads=4
 ```
+
+#### Code Fixer
+
+```bash
+./gradlew codeFixer \
+  -PfixPrompt="Fix the build errors reported in build.log" \
+  -PfixLog="build.log"
+```
+
+#### Code Implementer
+
+```bash
+./gradlew codeImplementer \
+  -PimplPrompt="Create a REST API endpoint for user management" \
+  -PimplHeadless=true
+```
+
+#### Documentation Processor
+
+```bash
+./gradlew docProcessor \
+  -PoverwriteMode="PatchToUpdate" \
+  -ProotDir="." \
+  -Pthreads=4
+```
+
+## Documentation Processing
+
+The **DocProcessor** enables bidirectional synchronization between documentation and code using markdown frontmatter specifications.
+
+### How It Works
+
+Create markdown files with YAML frontmatter that specify relationships to source files:
+
+#### Specifying Target Files
+
+Use the `specifies` key to indicate which files should be updated based on the documentation:
+
+```markdown
+---
+specifies:
+  - "../src/main/java/com/example/*.java"
+  - "../src/main/kotlin/**/*.kt"
+---
+# API Design Guidelines
+All service classes should follow these patterns...
+```
+
+#### Documenting Source Files
+
+Use the `documents` key to indicate which source files should inform the documentation:
+
+```markdown
+---
+documents:
+  - "../src/main/java/com/example/UserService.java"
+  - "../src/main/java/com/example/UserRepository.java"
+---
+# User Service API Documentation
+This documentation is automatically updated based on the source files...
+```
+
+#### File Transformations
+
+Use the `transforms` key to specify source-to-destination file mappings with regex patterns:
+
+```markdown
+---
+transforms:
+  - "src/main/java/(.+)\\.java -> src/test/java/$1Test.java"
+  - "src/main/kotlin/(.+)\\.kt -> docs/api/$1.md"
+---
+# Test Generation Template
+Generate test files based on the source implementation...
+```
+
+### Frontmatter Options
+
+| Key          | Description                                                 | Example                                 |
+|--------------|-------------------------------------------------------------|-----------------------------------------|
+| `specifies`  | Glob patterns for files to update based on this doc         | `"../src/**/*.java"`                    |
+| `documents`  | Glob patterns for source files that inform this doc         | `"../src/main/**/*.kt"`                 |
+| `transforms` | Regex patterns with backreferences for file transformations | `"src/(.+)\\.java -> test/$1Test.java"` |
+
+### Overwrite Modes
+
+| Mode                | Description                                                             |
+|---------------------|-------------------------------------------------------------------------|
+| `SkipExisting`      | Skip files that already exist                                           |
+| `OverwriteExisting` | Completely replace existing files                                       |
+| `OverwriteToUpdate` | Replace files only if source is newer than target                       |
+| `PatchExisting`     | Apply incremental patches to existing files                             |
+| `PatchToUpdate`     | Apply incremental patches only if source is newer than target (default) |
 
 ## API Providers
 
-Cognotik supports multiple AI providers with automatic fallback:
+Cognotik supports multiple AI providers. Configure your preferred provider:
 
-### Google Gemini (Default)
-
-```java
-ChatModel chatModel = GeminiModels.getGeminiFlash_30_Preview();
-```
-
-### OpenAI
-
-```java
-ChatModel chatModel = OpenAIModels.getGPT4o();
-```
-
-### Anthropic Claude
-
-```java
-ChatModel chatModel = AnthropicModels.getClaude3Sonnet();
-```
-
-### Groq
-
-```java
-ChatModel chatModel = GroqModels.getLlama3_70B();
-```
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Cognotik                             │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │   Harness   │  │   Tasks     │  │   Planning          │  │
-│  │  Framework  │  │   System    │  │   Engine            │  │
-│  ├─────────────┤  ├─────────────┤  ├─────────────────────┤  │
-│  │ FileGen     │  │ FileModify  │  │ WaterfallMode       │  │
-│  │ TaskHarness │  │ AutoFix     │  │ Brainstorming       │  │
-│  │ PlanHarness │  │ SubPlan     │  │ Orchestration       │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │                    Chat Interface                       ││
-│  │  ┌─────────┐ ┌─────────┐ ┌──────────┐ ┌──────────────┐  ││
-│  │  │ Gemini  │ │ OpenAI  │ │Anthropic │ │    Groq      │  ││
-│  │  └─────────┘ └─────────┘ └──────────┘ └──────────────┘  ││
-│  └─────────────────────────────────────────────────────────┘│
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │                  Platform Services                      ││
-│  │  Session Management │ Usage Tracking │ File Storage     ││
-│  └─────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Key Components
-
-- **Harness Framework**: Provides execution environments for different automation scenarios
-- **Task System**: Modular task types (FileModification, AutoFix, SubPlan, etc.)
-- **Planning Engine**: Sophisticated multi-step task orchestration with waterfall mode
-- **Chat Interface**: Unified interface for multiple AI providers
-- **Platform Services**: Session management, usage tracking, and file storage
+| Provider  | Model Example | Environment Variable |
+|-----------|---------------|----------------------|
+| Google    | Gemini 3.0    | `GOOGLE_API_KEY`     |
+| OpenAI    | GPT-4o        | `OPENAI_API_KEY`     |
+| Anthropic | Claude 4.5    | `ANTHROPIC_API_KEY`  |
+| Groq      | Llama 3 70B   | `GROQ_API_KEY`       |
 
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/SimiaCryptus/Cognotik.git
-cd Cognotik
-
-# Build the project
-./gradlew build
-
-# Run tests
-./gradlew test
-
-# Run with debug logging
-./gradlew run --debug
-```
-
-### Code Style
-
-This project follows standard Java conventions. Please ensure your code:
-
-- Follows the existing code style
-- Includes appropriate documentation
-- Has test coverage for new features
 
 ## License
 
@@ -417,10 +291,11 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Support
 
-- 📖 [Documentation](https://github.com/SimiaCryptus/Cognotik/wiki)
-- 🐛 [Issue Tracker](https://github.com/SimiaCryptus/Cognotik/issues)
-- 💬 [Discussions](https://github.com/SimiaCryptus/Cognotik/discussions)
+- 📖 [Cognotik Documentation](https://github.com/SimiaCryptus/Cognotik/wiki)
+- 🐛 [Issue Tracker](https://github.com/SimiaCryptus/CognotikDemo/issues)
+- 💬 [Discussions](https://github.com/SimiaCryptus/CognotikDemo/discussions)
 
 ---
 
-Made with ❤️ by [SimiaCryptus](https://github.com/SimiaCryptus)
+Made with ❤️ by [SimiaCryptus](https://github.com/SimiaCryptus) | Powered by [Cognotik](https://github.com/SimiaCryptus/Cognotik)
+- 📚 **Documentation Processing**: Automatically update code and docs based on markdown specifications
